@@ -12,11 +12,35 @@ def new_order():
     if request.method == "POST":
         order = request.json
         print(order)
-        # Aca debe ir kafka
+        # expect:
+        # {
+        #     "order_id": 1231,
+        #     "email_vendedor": "asdas@gmail",
+        #     "email_comprador": "asdas1@gmail.com",
+        #     "numero_sopaipillas": 12312
+        # }
+
+        # Aca debe ir kafka y generar topic
         return jsonify({"response":"Orden generada correctamente"})
     return "ok"
 
+@app.route("/dailySummary", methods = ["POST"])
+def daily_summary():
+    if request.method == "POST":
+        
+        # {
+        #     "order_id": 1231,
+        #     "email_vendedor": "asdas@gmail",
+        #     "email_comprador": "asdas1@gmail.com",
+        #     "numero_sopaipillas": 12312
+        # }
+        return jsonify({"response":"Reporte generado correctamente"})
 
+
+
+def enviar_correo():
+    pass
+        
 
 if __name__ == "__main__":
     app.run(debug=True)
