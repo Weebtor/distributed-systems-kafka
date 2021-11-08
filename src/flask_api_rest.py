@@ -40,8 +40,8 @@ def daily_summary():
         consumer = KafkaConsumer(ORDER,
             bootstrap_servers=['localhost:9092'],
             auto_offset_reset='earliest',
-            enable_auto_commit=True,
             consumer_timeout_ms=1000,
+            group_id='dailySummary',
             value_deserializer=lambda m: json.loads(m.decode('ascii')))
         print(consumer)
         for message in consumer:
