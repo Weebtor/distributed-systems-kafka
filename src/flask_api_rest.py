@@ -1,5 +1,10 @@
-import re
+import json
 from flask import Flask, request, jsonify
+from kafka import KafkaProducer, KafkaConsumer
+
+SUMMARY = 'summary'
+ORDER = 'order'
+
 
 app = Flask(__name__)
 
@@ -11,7 +16,6 @@ def hello_world():
 def new_order():
     if request.method == "POST":
         order = request.json
-        print(order)
         # expect:
         # {
         #     "order_id": 1231,
@@ -19,6 +23,10 @@ def new_order():
         #     "email_comprador": "asdas1@gmail.com",
         #     "numero_sopaipillas": 12312
         # }
+
+        producer = KafkaProducer(value_serializer=lambda m: json.dumps(m).encode('ascii'), bootstrap_servers=['localhost:9092'])
+        producer.send(ORDER, order)
+        producer.flush()
 
         # Aca debe ir kafka y generar topic
         return jsonify({"response":"Orden generada correctamente"})
