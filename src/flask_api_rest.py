@@ -8,6 +8,8 @@ ORDER = 'order'
 
 app = Flask(__name__)
 
+
+
 @app.route("/")
 def hello_world():
     return "<h1> Hello World </h1>"
@@ -37,14 +39,15 @@ def daily_summary():
     if request.method == "POST":
         to = request.json
         print(to)
-        consumer = KafkaConsumer(ORDER,
+        summary_consumer = KafkaConsumer(ORDER,
             bootstrap_servers=['localhost:9092'],
-            auto_offset_reset='earliest',
+            # auto_offset_reset='earliest',
             consumer_timeout_ms=1000,
-            group_id='dailySummary',
+            enable_auto_commit=True,
+            auto_commit_interval_ms = 100,
+            group_id='daily',
             value_deserializer=lambda m: json.loads(m.decode('ascii')))
-        print(consumer)
-        for message in consumer:
+        for message in summary_consumer:
             # print(message)
             print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
                                                 message.offset, message.key,
@@ -56,6 +59,7 @@ def daily_summary():
         #     "email_comprador": "asdas1@gmail.com",
         #     "numero_sopaipillas": 12312
         # }
+        summary_consumer.commit()
         return jsonify({"response":"Reporte generado correctamente"})
 
 
