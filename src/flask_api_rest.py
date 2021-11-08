@@ -35,7 +35,21 @@ def new_order():
 @app.route("/dailySummary", methods = ["POST"])
 def daily_summary():
     if request.method == "POST":
-        
+        to = request.json
+        print(to)
+        consumer = KafkaConsumer(ORDER,
+            bootstrap_servers=['localhost:9092'],
+            auto_offset_reset='earliest',
+            enable_auto_commit=True,
+            consumer_timeout_ms=1000,
+            value_deserializer=lambda m: json.loads(m.decode('ascii')))
+        print(consumer)
+        for message in consumer:
+            # print(message)
+            print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
+                                                message.offset, message.key,
+                                                message.value))
+        # 
         # {
         #     "order_id": 1231,
         #     "email_vendedor": "asdas@gmail",
