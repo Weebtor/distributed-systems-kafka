@@ -20,6 +20,10 @@ def new_order():
         #     "numero_sopaipillas": 12312
         # }
 
+        producer = KafkaProducer(value_serializer=lambda m: json.dumps(m).encode('ascii'), bootstrap_servers=['localhost:9092'])
+        producer.send(SUMMARY, order)
+        producer.flush()
+
         # Aca debe ir kafka y generar topic
         return jsonify({"response":"Orden generada correctamente"})
     return "ok"
@@ -36,10 +40,6 @@ def daily_summary():
         # }
         return jsonify({"response":"Reporte generado correctamente"})
 
-
-
-def enviar_correo():
-    pass
         
 
 if __name__ == "__main__":
