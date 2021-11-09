@@ -1,5 +1,5 @@
 source kafka.sh
 
 $KAFKA/bin/kafka-console-consumer.sh \
-  --topic order \
+  --topic summary \
   --bootstrap-server localhost:9092

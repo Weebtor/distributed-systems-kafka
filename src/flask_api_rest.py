@@ -4,7 +4,7 @@ from kafka import KafkaProducer, KafkaConsumer
 
 SUMMARY = 'summary'
 ORDER = 'order'
-
+ordenes = {}
 
 app = Flask(__name__)
 
@@ -48,7 +48,7 @@ def daily_summary():
             group_id='daily',
             value_deserializer=lambda m: json.loads(m.decode('ascii')))
         for message in summary_consumer:
-            # print(message)
+            #print(message)
             print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
                                                 message.offset, message.key,
                                                 message.value))
@@ -59,10 +59,43 @@ def daily_summary():
         #     "email_comprador": "asdas1@gmail.com",
         #     "numero_sopaipillas": 12312
         # }
+        
+        
+        
         summary_consumer.commit()
         return jsonify({"response":"Reporte generado correctamente"})
 
+@app.route("/summary", methods = ["POST"])
+def summary():
+    if request.method == "POST":
+        to = request.json
+        print(to)
+        summary_consumer = KafkaConsumer(ORDER,
+            bootstrap_servers=['localhost:9092'],
+            # auto_offset_reset='earliest',
+            consumer_timeout_ms=1000,
+            enable_auto_commit=True,
+            auto_commit_interval_ms = 100,
+            group_id='daily',
+            value_deserializer=lambda m: json.loads(m.decode('ascii')))
+        for message in summary_consumer:
+            #print(message)
+            n_sopai = (message.value['numero_sopaipillas'])
+            id_email = (message.value['email_vendedor'])
+            print (id_email, n_sopai)
+            for key in ordenes:
+                if (key == id_email):
+                    ordenes[key] += n_sopai
+                    break
+            else:
+                ordenes.setdefault(id_email, n_sopai)
+            print(ordenes)   
+        producer = KafkaProducer(value_serializer=lambda m: json.dumps(m).encode('ascii'), bootstrap_servers=['localhost:9092'])
+        producer.send(SUMMARY, ordenes)
+        producer.flush()        
+        summary_consumer.commit()
 
+        return jsonify({"response":"Reporte generado correctamente"})
 
 def enviar_correo():
     pass
