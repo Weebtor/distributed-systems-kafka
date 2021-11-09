@@ -1,19 +1,16 @@
 import json,smtplib, ssl
 from kafka import KafkaConsumer
 
-
+fromadrr='tarea2.sistdist'
+frompass='Tarea2_sistDist2021'
 SUMMARY = 'summary'
 
 
 #create topic: /usr/local/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic summary --partitions 1 --replication-factor 1 --config retention.ms=259200000
 
 
-
 if __name__=="__main__":
     
-    # fromadrr= input('Ingrese correo: ')
-    # frompass=input('Ingrese la clave del correo:')
-
     summary_consumer = KafkaConsumer(SUMMARY,
             bootstrap_servers=['localhost:9092'],
             # auto_offset_reset='earliest',
