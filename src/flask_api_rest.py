@@ -4,7 +4,6 @@ from kafka import KafkaProducer, KafkaConsumer
 
 SUMMARY = 'summary'
 ORDER = 'order'
-ordenes = {}
 
 app = Flask(__name__)
 
@@ -78,20 +77,31 @@ def summary():
             auto_commit_interval_ms = 100,
             group_id='daily',
             value_deserializer=lambda m: json.loads(m.decode('ascii')))
+        ordenes = {}
+        cocinero = {}
         for message in summary_consumer:
             #print(message)
             n_sopai = (message.value['numero_sopaipillas'])
-            id_email = (message.value['email_vendedor'])
-            print (id_email, n_sopai)
-            for key in ordenes:
-                if (key == id_email):
+            id_vendedor = (message.value['email_vendedor'])
+            id_cocinero = (message.value['email_comprador'])
+            #print (id_email, n_sopai)
+            
+            for key in ordenes.key():
+                if (key == id_vendedor):
                     ordenes[key] += n_sopai
                     break
             else:
-                ordenes.setdefault(id_email, n_sopai)
-            print(ordenes)   
+                ordenes.setdefault(id_cocinero, n_sopai)
+            print(ordenes)  
+            for key in cocinero.keys():
+                if(key == id_cocinero):
+                    cocinero[key]  += n_sopai
+                    break
+            else:
+                cocinero.setdefault(id_cocinero, n_sopai)
         producer = KafkaProducer(value_serializer=lambda m: json.dumps(m).encode('ascii'), bootstrap_servers=['localhost:9092'])
         producer.send(SUMMARY, ordenes)
+        producer.send(SUMMARY, cocinero)
         producer.flush()        
         summary_consumer.commit()
 
