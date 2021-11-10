@@ -1,5 +1,6 @@
 import json,smtplib, ssl
 from kafka import KafkaConsumer
+from datetime import date
 
 fromadrr='tarea2.sistdist'
 frompass='Tarea2_sistDist2021'
@@ -22,9 +23,9 @@ if __name__=="__main__":
 
     context = ssl.create_default_context()
     mail_msg='''
-            Timestap: {}
-            Numero de orden: {}
-            Numero de sopaipas: {}'''
+            Fecha:{}
+            Cantidad de ordenes recibidas: {}
+            Cantidad de sopaipillas vendidas: {}'''
     server= smtplib.SMTP('smtp.gmail.com',587)
     server.ehlo()
     server.starttls(context=context)
@@ -32,13 +33,13 @@ if __name__=="__main__":
     server.login(fromadrr,frompass)
 
     for msg in summary_consumer:
-        print('\n mensaje ',msg)
-        value=msg.value
-        try:
-            
-            server.sendmail(fromadrr,value['email_vendedor'],mail_msg.format(msg.timestamp,value['order_id'],value['numero_sopaipillas']))
+        # resumen={'ventas': {'vendor_tarea2@yopmail.com': {'n_sopaipillas': 246246, 'n_ordenes': 2}, 'vendor2_tarea2@yopmail.com': {'n_sopaipillas': 246246, 'n_ordenes': 2}}, 'fecha': date.today().strftime("%d/%m/%Y") }
+        
+        for mail in msg['ventas'].keys():         
+            try:               
+                server.sendmail(fromadrr,mail,mail_msg.format(msg['fecha'],msg['ventas'][mail]['n_ordenes'],msg['ventas'][mail]['n_sopaipillas']))
 
-        except:
-            print('Algo fallo al enviar el correo a ', msg)
+            except:
+                print('\nAlgo fallo al enviar el correo a ', msg)
     
     server.close()
