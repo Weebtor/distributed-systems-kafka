@@ -43,7 +43,7 @@ def summary():
         summary_consumer = KafkaConsumer(ORDER,
             bootstrap_servers=['localhost:9092'],
             # auto_offset_reset='earliest',
-            consumer_timeout_ms=5000,
+            consumer_timeout_ms=1000,
             # enable_auto_commit=True,
             # auto_commit_interval_ms = 100,
             group_id='dailySummary',

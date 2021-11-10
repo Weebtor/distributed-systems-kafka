@@ -36,7 +36,8 @@ if __name__=="__main__":
         # resumen={'ventas': {'vendor_tarea2@yopmail.com': {'n_sopaipillas': 246246, 'n_ordenes': 2}, 'vendor2_tarea2@yopmail.com': {'n_sopaipillas': 246246, 'n_ordenes': 2}}, 'fecha': date.today().strftime("%d/%m/%Y") }
         print(msg)
         for mail in msg.value['ventas'].keys():        
-            try:               
+            try:
+                               
                 server.sendmail(fromadrr,mail,mail_msg.format(msg.value['fecha'],msg.value['ventas'][mail]['n_ordenes'],msg.value['ventas'][mail]['n_sopaipillas']))
                 print(f"Se envio correctamente el correo a {mail}")
             except:
