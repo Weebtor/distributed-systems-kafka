@@ -78,9 +78,6 @@ def summary():
         
 
         return jsonify({"response":"Reporte generado correctamente"})
-
-def enviar_correo():
-    pass
         
 
 if __name__ == "__main__":
