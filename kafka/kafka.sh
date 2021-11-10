@@ -1,3 +1,3 @@
 #!/bin/bash
 
-KAFKA=/home/ariel/kafka_2.13-3.0.0
+KAFKA=/usr/local/kafka-server/kafka_2.13-3.0.0

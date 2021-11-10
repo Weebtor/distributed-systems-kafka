@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 from flask import Flask, request, jsonify
 from kafka import KafkaProducer, KafkaConsumer
@@ -55,8 +56,8 @@ def daily_summary():
         # {
         #     "order_id": 1231,
         #     "email_vendedor": "asdas@gmail",
-        #     "email_comprador": "asdas1@gmail.com",
-        #     "numero_sopaipillas": 12312
+        #     "email_cocinero": "asdas1@gmail.com",
+        #     "numero_sopaipillas": 12
         # }
         
         
@@ -75,35 +76,32 @@ def summary():
             consumer_timeout_ms=1000,
             enable_auto_commit=True,
             auto_commit_interval_ms = 100,
-            group_id='daily',
+            group_id='dailySummary',
             value_deserializer=lambda m: json.loads(m.decode('ascii')))
-        ordenes = {}
-        cocinero = {}
+        
+
+        resumen = {
+            "ventas": {},
+            "fecha": datetime.today()
+            }
         for message in summary_consumer:
-            #print(message)
-            n_sopai = (message.value['numero_sopaipillas'])
-            id_vendedor = (message.value['email_vendedor'])
-            id_cocinero = (message.value['email_comprador'])
+            print(message)
             #print (id_email, n_sopai)
             
-            for key in ordenes.key():
-                if (key == id_vendedor):
-                    ordenes[key] += n_sopai
-                    break
-            else:
-                ordenes.setdefault(id_cocinero, n_sopai)
-            print(ordenes)  
-            for key in cocinero.keys():
-                if(key == id_cocinero):
-                    cocinero[key]  += n_sopai
-                    break
-            else:
-                cocinero.setdefault(id_cocinero, n_sopai)
-        producer = KafkaProducer(value_serializer=lambda m: json.dumps(m).encode('ascii'), bootstrap_servers=['localhost:9092'])
-        producer.send(SUMMARY, ordenes)
-        producer.send(SUMMARY, cocinero)
-        producer.flush()        
+            if message.value['email_vendedor'] not in resumen["ventas"].keys():
+                resumen["ventas"][message.value['email_vendedor']] = {
+                    "n_sopaipillas": int(message.value['numero_sopaipillas']),
+                    "n_ordenes": 1
+                    }
+            else: # hace los calculos
+                resumen["ventas"][message.value['email_vendedor']]["n_sopaipillas"] = int(resumen["ventas"][message.value['email_vendedor']]["n_sopaipillas"]) + int(message.value['numero_sopaipillas'])
+                resumen["ventas"][message.value['email_vendedor']]["n_ordenes"] = int(resumen["ventas"][message.value['email_vendedor']]["n_ordenes"]) + 1
+        print(resumen)
         summary_consumer.commit()
+        # producer = KafkaProducer(value_serializer=lambda m: json.dumps(m).encode('ascii'), bootstrap_servers=['localhost:9092'])
+        # producer.send(SUMMARY, resumen)
+        # producer.flush()        
+        
 
         return jsonify({"response":"Reporte generado correctamente"})
 
