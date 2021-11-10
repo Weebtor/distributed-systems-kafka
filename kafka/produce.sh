@@ -3,5 +3,5 @@
 source kafka.sh
 
 $KAFKA/bin/kafka-console-producer.sh \
-  --topic summarie \
+  --topic order \
   --bootstrap-server localhost:9092
