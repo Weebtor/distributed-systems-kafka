@@ -6,10 +6,6 @@ fromadrr='tarea2.sistdist'
 frompass='Tarea2_sistDist2021'
 SUMMARY = 'summary'
 
-
-#create topic: /usr/local/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic summary --partitions 1 --replication-factor 1 --config retention.ms=259200000
-
-
 if __name__=="__main__":
     # Consume del topico "summary"
     # Configurado para que no hacer break del loop 
@@ -24,9 +20,13 @@ if __name__=="__main__":
     # Configuración para el envio del correo
     context = ssl.create_default_context()
     mail_msg='''
+            Reporte de sopaipillas.
+
             Fecha:{}
             Cantidad de ordenes recibidas: {}
-            Cantidad de sopaipillas vendidas: {}'''
+            Cantidad de sopaipillas vendidas: {}
+            
+            '''
     server= smtplib.SMTP('smtp.gmail.com',587)
     server.ehlo()
     server.starttls(context=context)
@@ -43,7 +43,7 @@ if __name__=="__main__":
             try:
                 # print(msg.value['fecha'],msg.value['ventas'][mail]['n_ordenes'],msg.value['ventas'][mail]['n_sopaipillas'])
                 server.sendmail(fromadrr,mail,mail_msg.format(msg.value['fecha'],msg.value['ventas'][mail]['n_ordenes'],msg.value['ventas'][mail]['n_sopaipillas']))
-                print(f"Enviado correctamente a {mail}")
+                print(f"Reporte enviado correctamente a {mail}")
                 summary_consumer.commit()
             except Exception as e:
                 print(e)
