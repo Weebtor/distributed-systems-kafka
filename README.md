@@ -35,7 +35,7 @@ El archivo `api_rest.py` corresponde a la API REST programada con el framework d
 }
 ```
 ### Mandar Email
-El archivo `send_mail.py` correponde a la aplicación encargada de consomir del topico `summary` para luego enviar un correo. El correo recibido tiene el siguiente formato:
+El archivo `send_mail.py` correponde a la aplicación encargada de consumir del topico `summary` para luego enviar un correo. El correo recibido tiene el siguiente formato:
 
 ![correo](img/tareakafka2.png)
 
