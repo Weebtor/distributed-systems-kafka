@@ -17,7 +17,7 @@ El archivo `api_rest.py` corresponde a la API REST programada con el framework d
 * **/newOrder**: Esta ruta recibe peticiones con el metodo POST con un JSON que contiene los datos relevantes de una nueva orden, esta orden es enviada a Apache Kafka y es guardado en el topico `order`:
 
 
-* **/dailySummary**: Esta ruta recibe peticiones con el metodo POST y se encarga de consumir todas las ordenes del topico `order` hasta el momento y genera un resumen de estas ordenes. El resumen es almacenado en el topico `summary` en con formato JSON. Ejemplo de un resumen:
+* **/dailySummary**: Esta ruta recibe peticiones con el metodo POST y se encarga de consumir todas las ordenes del topico `order` hasta el momento y genera un resumen de estas ordenes. El resumen es almacenado en el topico `summary` en formato JSON. Ejemplo de un resumen:
 ```json
 // Resumen de ordenes diarias en el topico "summary"
 {
@@ -92,7 +92,7 @@ Si la petición se realizo correctamente se respondera con un JSON confirmando q
 
 #### Enviar correo
 
-Si existen ventas registradas en el resumen diario, se enviara un correo a su respectivo vendedor.
+Si existen ventas registradas en el resumen diario, se enviara un correo a su respectivo vendedor. Este correo se envia desde una direccion de google creada para esta ocasion.
 
 ## Integrantes:
 * Ariel Gómez
