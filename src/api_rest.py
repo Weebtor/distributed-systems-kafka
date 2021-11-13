@@ -18,6 +18,7 @@ def hello_world():
 def new_order():
     if request.method == "POST":
         order = request.json
+        # print(order)
         # expect:
         # {
         #     "order_id": 1231,
@@ -29,8 +30,6 @@ def new_order():
         producer = KafkaProducer(value_serializer=lambda m: json.dumps(m).encode('ascii'), bootstrap_servers=['localhost:9092'])
         producer.send(ORDER, order)
         producer.flush()
-
-        # Aca debe ir kafka y generar topic
         return jsonify({"response":"Orden generada correctamente"})
     return "ok"
 
@@ -39,7 +38,6 @@ def new_order():
 @app.route("/dailySummary", methods = ["POST"])
 def summary():
     if request.method == "POST":
-        destino = request.json
         summary_consumer = KafkaConsumer(ORDER,
             bootstrap_servers=['localhost:9092'],
             # auto_offset_reset='earliest',
@@ -48,8 +46,8 @@ def summary():
             # auto_commit_interval_ms = 100,
             group_id='dailySummary',
             value_deserializer=lambda m: json.loads(m.decode('ascii')))
-        today =  date.today()
         
+        today =  date.today()
         resumen = {
             "ventas": {},
             "fecha": today.strftime("%d/%m/%Y"), 
@@ -57,10 +55,11 @@ def summary():
         
         # Revisa todos los mensajes sin consumir a partir del offset registrado
         for message in summary_consumer:
-            print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
-                message.offset, message.key,
-                message.value))
+            # print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
+            #     message.offset, message.key,
+            #     message.value))
             
+            # Genera el resumen
             if message.value['email_vendedor'] not in resumen["ventas"].keys():
                 resumen["ventas"][message.value['email_vendedor']] = {
                     "n_sopaipillas": int(message.value['numero_sopaipillas']),
@@ -70,8 +69,8 @@ def summary():
                 resumen["ventas"][message.value['email_vendedor']]["n_sopaipillas"] = int(resumen["ventas"][message.value['email_vendedor']]["n_sopaipillas"]) + int(message.value['numero_sopaipillas'])
                 resumen["ventas"][message.value['email_vendedor']]["n_ordenes"] = int(resumen["ventas"][message.value['email_vendedor']]["n_ordenes"]) + 1
         print(resumen)
-        summary_consumer.commit() # Registra el ultimo offset
 
+        summary_consumer.commit() # Registra el ultimo offset
         producer = KafkaProducer(value_serializer=lambda m: json.dumps(m).encode('ascii'), bootstrap_servers=['localhost:9092'])
         producer.send(SUMMARY, resumen)
         producer.flush()        
