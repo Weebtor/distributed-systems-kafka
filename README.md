@@ -42,7 +42,7 @@ El archivo `send_mail.py` correponde a la aplicación encargada de consomir del 
 ## Configuración y ejecución
 
 ### 
-Los topicos utilizados en Apache Kafka son `order` y `summary`, por lo que se utilizó el comando *bash* para poder crearlos, 
+Los topicos utilizados en Apache Kafka son `order` y `summary`, por lo que se utilizó el comando *bash* para poder crearlos. El archivo se encuentra en `kafka/create-topics.sh´.
 
 ```bash
 # $KAFKA corresponde a la ruta en la que se encuentra Apache Kafka
